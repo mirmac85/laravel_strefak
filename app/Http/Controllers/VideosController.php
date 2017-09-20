@@ -4,11 +4,19 @@ namespace App\Http\Controllers;
 
 // use Illuminate\Http\Request;
 use App\Video;
+use App\Category;
 use Illuminate\Support\Facades\Request;
 use App\Http\Requests\CreateVideoRequest;
+use Auth;
+use Session;
 
-class VideosController extends Controller
-{
+
+class VideosController extends Controller {
+
+    public function __construct() {
+        $this->middleware('auth', ['only' => 'create']);
+    }
+
 
     // lista filmów
     public function index() {
@@ -26,13 +34,20 @@ class VideosController extends Controller
 
     // tworzenie filmu
     public function create() {
-        return view('videos.create');
+        $categories = Category::pluck('name', 'id');
+        return view('videos.create')->with('categories', $categories);
     }  
 
 
     // zapis filmu
     public function store(CreateVideoRequest $request) {
-        Video::create($request->all());
+        $video =  new Video($request->all());
+        Auth::user()->videos()->save($video);
+
+        $categoryIds = $request->input('CategoryList');
+        $video->categories()->attach($categoryIds);
+
+        Session::flash('video_created', 'Twój film został zapisany');
         return redirect('videos');
     }  
 
@@ -40,7 +55,10 @@ class VideosController extends Controller
     // edycja filmu
     public function edit($id) {
         $video = Video::findOrFail($id);
-        return view('videos.edit')->with('video', $video);
+
+        $categories = Category::pluck('name', 'id');
+
+        return view('videos.edit', compact('video', 'categories'));
     }
 
 
@@ -48,6 +66,7 @@ class VideosController extends Controller
     public function update($id, CreateVideoRequest $request) {
         $video = Video::findOrFail($id);
         $video->update($request->all());
+        $video->categories()->sync($request->input('CategoryList'));
         return redirect('videos');
     }
 }

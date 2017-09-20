@@ -20,16 +20,15 @@
             <div class="single-video-content">
                 <div class="categories">
                     <h4>Kategorie</h4>
-                    <span>
-                    <a href="">Webdesign</a>,&nbsp;
-                    <a href="">PHP</a>,&nbsp;
-                    <a href="">Angular</a>
-                    </span>
+
+                    @foreach ($video->categories as $category)
+                        <a href="">{{ $category->name }}&nbsp;</a>
+                    @endforeach
                 </div>
                 <h4>Pełny opis</h4>
-                <p>{{$video->description}}</p>
+                <p>{{ $video->description }}</p>
                 <span class="upper-label">Dodał</span>
-                <span class="video-author">Strefa Kursów</span>
+                <span class="video-author">{{ $video->user->name }}</span>
                 <div class="edit-button">
 
                     <a href="{{ action('VideosController@edit', $video->id) }}" class="btn btn-primary btn-lg">

@@ -11,16 +11,15 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/', 'VideosController@index');
 
 Route::get('/about', 'PagesController@about');
 Route::get('/contact', 'PagesController@contact');
 
-// Route::post('/videos', 'VideosController@store');
-// Route::get('/videos', 'VideosController@index');
-// Route::get('/videos/create', 'VideosController@create');
-// Route::get('/videos/{id}', 'VideosController@show');
-
 Route::resource('videos', 'VideosController');
+
+Route::get('/logout', 'Auth\LoginController@logout');
+Auth::routes();
+
+// Route::get('/home', 'HomeController@index')->name('home');
